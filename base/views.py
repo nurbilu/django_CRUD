@@ -9,7 +9,11 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import serializers
 from base.models import Product
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
+
+@api_view(['GET'])
 def index(req):
     return Response('hello')
 
@@ -31,11 +35,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def products(req):
     if req.method =='GET':
         user= req.user
         temp_task=user.product_set.all()
-        return Response (ProductSerializer(temp_task,many=True).data)
+        return Response(ProductSerializer(temp_task, many=True).data)
 
 
 
@@ -77,6 +82,7 @@ def register(request):
 
 @api_view(['GET','POST','DELETE','PUT','PATCH'])
 @permission_classes([IsAuthenticated])
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 def product(request,id=None):
     if request.method == 'GET':
         if id is not None:

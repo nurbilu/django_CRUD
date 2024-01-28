@@ -63,7 +63,6 @@
             <!-- Products will be added here -->
         </tbody>
         <form id="productForm" >
-            <input type="text" id="productName" placeholder="Product Name" required>
             <input type="text" id="productDescription" placeholder="Product Description" required>
             <input type="number" id="productPrice" placeholder="Product Price" required>
             <button onclick="addProduct()">Add Product</button>
@@ -105,7 +104,7 @@
             const MY_SERVER = "http://127.0.0.1:8000/"
 
             const pub_test = async () => {
-                let res = await axios.get(`${MY_SERVER}test`)
+                let res = await axios.get(`${MY_SERVER}test/`)
                 console.log(res.data);
             }
 
@@ -169,7 +168,7 @@
                     if (ref_token) {
                         // console.log("not logged");
                         console.log(ref_token);
-                        let token = await axios.post(MY_SERVER + "refresh/", {
+                        let token = await axios.post(`${MY_SERVER}refresh/`, {
                             "refresh": JSON.parse(ref_token)
 
                         });
@@ -242,13 +241,10 @@
                             let idCell = row.insertCell(0);
                             idCell.innerHTML = product.id;
 
-                            let nameCell = row.insertCell(1);
-                            nameCell.innerHTML = product.name;
-
-                            let descCell = row.insertCell(2);
+                            let descCell = row.insertCell(1);
                             descCell.innerHTML = product.description;
 
-                            let priceCell = row.insertCell(3);
+                            let priceCell = row.insertCell(2);
                             priceCell.innerHTML = product.price;
                         });
                     })
@@ -258,16 +254,17 @@
             }
             // Function to Add a New Product
             addProduct = () => {
-                const productName = document.getElementById('productName').value;
-                const productDesc = document.getElementById('product')
+
+                const productDesc = document.getElementById('productDesc').value
                 const productPrice = document.getElementById('productPrice').value;
 
                 axios.post(`${MY_SERVER}products/`, {
-                    name: productName,
+                    desc: productDesc,
                     price: productPrice
                 })
                     .then(function (response) {
                         refreshProductTable();
+                        console.log()
                     })
                     .catch(function (error) {
                         console.log(error);
