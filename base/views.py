@@ -33,14 +33,14 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def products(req):
-    if req.method =='GET':
-        user= req.user
-        temp_task=user.product_set.all()
-        return Response(ProductSerializer(temp_task, many=True).data)
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+# def products(req):
+#     if req.method =='GET':
+#         user= req.user
+#         temp_task=user.product_set.all()
+#         return Response(ProductSerializer(temp_task, many=True).data)
 
 
 
@@ -83,7 +83,7 @@ def register(request):
 @api_view(['GET','POST','DELETE','PUT','PATCH'])
 @permission_classes([IsAuthenticated])
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-def product(request,id=None):
+def products(request,id=None):
     if request.method == 'GET':
         if id is not None:
             temp_task=Product.objects.get(id=id)
@@ -99,9 +99,13 @@ def product(request,id=None):
         )
         return Response(ProductSerializer(temp_task).data)
     elif request.method == 'DELETE':
-        temp_task=Product.objects.get(id=id)
-        temp_task.delete()
-        return Response("delete success")
+        try:
+            temp_task=Product.objects.get(id=id)
+            temp_task.delete()
+            return Response("{'message': 'Product deleted successfully'}", status=200)
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=400)
+
     elif request.method == 'PUT':
         temp_task=Product.objects.get(id=id)
         temp_task.desc=request.data['desc']
